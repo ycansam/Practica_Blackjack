@@ -81,9 +81,16 @@ public class Deck : MonoBehaviour
         {
             PushPlayer();
             PushDealer();
-            /*TODO:
-             * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
-             */
+
+            if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
+                Debug.Log("Empate");
+            }else if(player.GetComponent<CardHand>().points > 21 && dealer.GetComponent<CardHand>().points > 21 ){
+                Debug.Log("Los dos pierden");
+            }else if(player.GetComponent<CardHand>().points > 21 && dealer.GetComponent<CardHand>().points <= 21 ){
+                Debug.Log("El dealer gana, player superó 21");
+            }else if(player.GetComponent<CardHand>().points <= 21 && dealer.GetComponent<CardHand>().points > 21 ){
+                Debug.Log("El jugador gana, dealer superó 21");
+            }
         }
     }
 

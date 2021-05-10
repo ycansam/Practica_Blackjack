@@ -13,7 +13,9 @@ public class Deck : MonoBehaviour
     public Text probMessage;
 
     public int[] values = new int[52];
-    int cardIndex = 0;    
+    int cardIndex = 0;  
+
+    private bool gameStop = false;  
 
        
     private void Awake()
@@ -86,14 +88,19 @@ public class Deck : MonoBehaviour
         
         if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
         Debug.Log("Empate");
+            gameStop = true;
         }else if(dealer.GetComponent<CardHand>().points > 21){
+            gameStop = true;
             Debug.Log("Jugador gana");
         }else if(player.GetComponent<CardHand>().points > 21){
             Debug.Log("Dealer gana");
+            gameStop = true;
         }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
             Debug.Log("Player gana");
+            gameStop = true;
         }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
             Debug.Log("dealer gana");
+            gameStop = true;
         }
     }
 
@@ -101,10 +108,24 @@ public class Deck : MonoBehaviour
     {
         
         int playerPoints = player.GetComponent<CardHand>().points;
-        int dealerPoints = dealer.GetComponent<CardHand>().points;
-        Debug.Log(playerPoints);
-        float probabilidad = (dealerPoints/21)+(playerPoints/21);
-        Debug.Log(probabilidad);
+
+
+
+        // Probabilidad de pasarse
+        int counter = 0;
+        for(int i = 0; i<13;i++){
+            int value = i+1;
+            if(i > 10){
+                value = 10;
+            }
+            if(playerPoints+value>21){
+                counter++;
+            }
+        }
+        float probabilidadDePasarse = counter/13;
+
+        Debug.Log(probabilidadDePasarse);
+        //Debug.Log(probabilidad);
 
         /*TODO:
         * Calcular las probabilidades de:
@@ -135,20 +156,22 @@ public class Deck : MonoBehaviour
 
     public void Hit()
     {
-        
-        if(player.GetComponent<CardHand>().cards.Count == 2)
-        {
-            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+        if(!gameStop){
+            if(player.GetComponent<CardHand>().cards.Count == 2)
+            {
+                dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            }
+            
+            //Repartimos carta al jugador
+            PushPlayer();
+
+            if(player.GetComponent<CardHand>().points > 21)
+            {
+                Debug.Log("Player pierde");
+                gameStop = true;
+            }
         }
         
-        //Repartimos carta al jugador
-        PushPlayer();
-
-        if(player.GetComponent<CardHand>().points> 21)
-        {
-            Debug.Log("Player pierde");
-        }
-
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
          */      
@@ -173,26 +196,33 @@ public class Deck : MonoBehaviour
             if(dealer.GetComponent<CardHand>().points >= 17)
             {
                 dealerStand = true;
-                break;
+                if(dealerStand)
+                {
+                    if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
+                    Debug.Log("Empate");
+                        gameStop = true;
+                    }else if(dealer.GetComponent<CardHand>().points > 21){
+                        Debug.Log("Jugador gana");
+                        gameStop = true;
+                    }else if(player.GetComponent<CardHand>().points > 21){
+                        Debug.Log("Dealer gana");
+                        gameStop = true;
+                    }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
+                        Debug.Log("Player gana");
+                        gameStop = true;
+                    }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
+                        Debug.Log("dealer gana");
+                        gameStop = true;
+                    }else if(dealer.GetComponent<CardHand>().points < player.GetComponent<CardHand>().points){
+                        Debug.Log("player gana");
+                        gameStop = true;
+                    }else if(dealer.GetComponent<CardHand>().points > player.GetComponent<CardHand>().points){
+                        Debug.Log("dealer gana");
+                        gameStop = true;
+                    }
+                }
             }
-            
         }
-        if(dealerStand)
-        {
-            if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
-            Debug.Log("Empate");
-            }else if(dealer.GetComponent<CardHand>().points > 21){
-                Debug.Log("Jugador gana");
-            }else if(player.GetComponent<CardHand>().points > 21){
-                Debug.Log("Dealer gana");
-            }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
-                Debug.Log("Player gana");
-            }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
-                Debug.Log("dealer gana");
-            }
-        }
-
-       
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más

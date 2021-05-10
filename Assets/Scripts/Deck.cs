@@ -85,21 +85,22 @@ public class Deck : MonoBehaviour
             PushPlayer();
             PushDealer();
         }
+        finalMessage.text = "";
         
         if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
-        Debug.Log("Empate");
+            finalMessage.text += "Empate";
             gameStop = true;
         }else if(dealer.GetComponent<CardHand>().points > 21){
             gameStop = true;
-            Debug.Log("Jugador gana");
+            finalMessage.text += "Jugador Gana";
         }else if(player.GetComponent<CardHand>().points > 21){
-            Debug.Log("Dealer gana");
+            finalMessage.text += "Dealer Gana";
             gameStop = true;
         }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
-            Debug.Log("Player gana");
+            finalMessage.text += "Player Gana";
             gameStop = true;
         }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
-            Debug.Log("dealer gana");
+            finalMessage.text += "Dealer Gana";
             gameStop = true;
         }
     }
@@ -108,11 +109,24 @@ public class Deck : MonoBehaviour
     {
         
         int playerPoints = player.GetComponent<CardHand>().points;
+        probMessage.text = "";
+        finalMessage.text = "";
 
-
-
-        // Probabilidad de pasarse
+        // probabilidad entre 21 y 17
         int counter = 0;
+        for(int i = 0; i<13;i++){
+            int value = i+1;
+            if(i > 10){
+                value = 10;
+            }
+            if(playerPoints+value >= 17 && playerPoints+value <= 21){
+                counter++;
+            }
+        }
+        float probabilidadEntre21 = (float)counter/(float)13;
+        probMessage.text += "Prob entre 17 y 21: "+ probabilidadEntre21 + " %" + "\n";
+        // Probabilidad de pasarse
+        counter = 0;
         for(int i = 0; i<13;i++){
             int value = i+1;
             if(i > 10){
@@ -120,12 +134,11 @@ public class Deck : MonoBehaviour
             }
             if(playerPoints+value>21){
                 counter++;
+                 Debug.Log(counter);
             }
         }
-        float probabilidadDePasarse = counter/13;
-
-        Debug.Log(probabilidadDePasarse);
-        //Debug.Log(probabilidad);
+        float probabilidadDePasarse = (float)counter/(float)13;
+        probMessage.text +="Prob de pasarse de 21: " + probabilidadDePasarse +"%"+ "\n";
 
         /*TODO:
         * Calcular las probabilidades de:
@@ -157,6 +170,7 @@ public class Deck : MonoBehaviour
     public void Hit()
     {
         if(!gameStop){
+            finalMessage.text = "";
             if(player.GetComponent<CardHand>().cards.Count == 2)
             {
                 dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
@@ -167,7 +181,7 @@ public class Deck : MonoBehaviour
 
             if(player.GetComponent<CardHand>().points > 21)
             {
-                Debug.Log("Player pierde");
+                finalMessage.text = "Player pierde";
                 gameStop = true;
             }
         }
@@ -187,6 +201,7 @@ public class Deck : MonoBehaviour
         {
             dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
         }
+        finalMessage.text = "";
 
         bool dealerStand = false;
         while(dealer.GetComponent<CardHand>().points <= 16)
@@ -199,25 +214,25 @@ public class Deck : MonoBehaviour
                 if(dealerStand)
                 {
                     if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
-                    Debug.Log("Empate");
+                        finalMessage.text = "Empate";
                         gameStop = true;
                     }else if(dealer.GetComponent<CardHand>().points > 21){
-                        Debug.Log("Jugador gana");
+                        finalMessage.text = "Jugador Gana";
                         gameStop = true;
                     }else if(player.GetComponent<CardHand>().points > 21){
-                        Debug.Log("Dealer gana");
+                        finalMessage.text = "Dealer Gana";
                         gameStop = true;
                     }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
-                        Debug.Log("Player gana");
+                        finalMessage.text = "Player Gana";
                         gameStop = true;
                     }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
-                        Debug.Log("dealer gana");
+                        finalMessage.text = "Dealer Gana";
                         gameStop = true;
                     }else if(dealer.GetComponent<CardHand>().points < player.GetComponent<CardHand>().points){
-                        Debug.Log("player gana");
+                        finalMessage.text = "Player Gana";
                         gameStop = true;
                     }else if(dealer.GetComponent<CardHand>().points > player.GetComponent<CardHand>().points){
-                        Debug.Log("dealer gana");
+                        finalMessage.text = "Dealer Gana";
                         gameStop = true;
                     }
                 }

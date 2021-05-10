@@ -15,7 +15,6 @@ public class Deck : MonoBehaviour
     public int[] values = new int[52];
     int cardIndex = 0;    
 
-    private bool dealerStand = false;
        
     private void Awake()
     {    
@@ -166,15 +165,18 @@ public class Deck : MonoBehaviour
             dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
         }
 
-        if(dealer.GetComponent<CardHand>().points <= 16)
+        bool dealerStand = false;
+        while(dealer.GetComponent<CardHand>().points <= 16)
         {
             PushDealer();
-        }
 
-        if(dealer.GetComponent<CardHand>().points >= 17 && dealer.GetComponent<CardHand>().points <= 21)
-        {
-            dealerStand = true;
-        } 
+            if(dealer.GetComponent<CardHand>().points >= 17)
+            {
+                dealerStand = true;
+                break;
+            }
+            
+        }
         if(dealerStand)
         {
             if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
@@ -189,7 +191,7 @@ public class Deck : MonoBehaviour
                 Debug.Log("dealer gana");
             }
         }
-       
+
        
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos

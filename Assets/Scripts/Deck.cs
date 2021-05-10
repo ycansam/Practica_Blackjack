@@ -112,6 +112,9 @@ public class Deck : MonoBehaviour
         probMessage.text = "";
         finalMessage.text = "";
 
+
+
+        
         // probabilidad entre 21 y 17
         int counter = 0;
         for(int i = 0; i<13;i++){
@@ -124,7 +127,8 @@ public class Deck : MonoBehaviour
             }
         }
         float probabilidadEntre21 = (float)counter/(float)13;
-        probMessage.text += "Prob entre 17 y 21: "+ probabilidadEntre21 + " %" + "\n";
+
+        probMessage.text += probabilidadEntre21*100 + " - ";
         // Probabilidad de pasarse
         counter = 0;
         for(int i = 0; i<13;i++){
@@ -134,11 +138,10 @@ public class Deck : MonoBehaviour
             }
             if(playerPoints+value>21){
                 counter++;
-                 Debug.Log(counter);
             }
         }
         float probabilidadDePasarse = (float)counter/(float)13;
-        probMessage.text +="Prob de pasarse de 21: " + probabilidadDePasarse +"%"+ "\n";
+        probMessage.text += probabilidadDePasarse*100;
 
         /*TODO:
         * Calcular las probabilidades de:

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Deck : MonoBehaviour
@@ -14,6 +14,8 @@ public class Deck : MonoBehaviour
 
     public int[] values = new int[52];
     int cardIndex = 0;    
+
+    private bool dealerStand = false;
        
     private void Awake()
     {    
@@ -81,27 +83,36 @@ public class Deck : MonoBehaviour
         {
             PushPlayer();
             PushDealer();
-
-            if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
-                Debug.Log("Empate");
-            }else if(player.GetComponent<CardHand>().points > 21 && dealer.GetComponent<CardHand>().points > 21 ){
-                Debug.Log("Los dos pierden");
-            }else if(player.GetComponent<CardHand>().points > 21 && dealer.GetComponent<CardHand>().points <= 21 ){
-                Debug.Log("El dealer gana, player superó 21");
-            }else if(player.GetComponent<CardHand>().points <= 21 && dealer.GetComponent<CardHand>().points > 21 ){
-                Debug.Log("El jugador gana, dealer superó 21");
-            }
+        }
+        
+        if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
+        Debug.Log("Empate");
+        }else if(dealer.GetComponent<CardHand>().points > 21){
+            Debug.Log("Jugador gana");
+        }else if(player.GetComponent<CardHand>().points > 21){
+            Debug.Log("Dealer gana");
+        }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
+            Debug.Log("Player gana");
+        }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
+            Debug.Log("dealer gana");
         }
     }
 
     private void CalculateProbabilities()
     {
+        
+        int playerPoints = player.GetComponent<CardHand>().points;
+        int dealerPoints = dealer.GetComponent<CardHand>().points;
+        Debug.Log(playerPoints);
+        float probabilidad = (dealerPoints/21)+(playerPoints/21);
+        Debug.Log(probabilidad);
+
         /*TODO:
-         * Calcular las probabilidades de:
-         * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
-         * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
-         * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
-         */
+        * Calcular las probabilidades de:
+        * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
+        * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
+        * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
+        */
     }
 
     void PushDealer()
@@ -110,7 +121,7 @@ public class Deck : MonoBehaviour
          * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
          */
         dealer.GetComponent<CardHand>().Push(faces[cardIndex],values[cardIndex]);
-        cardIndex++;        
+        cardIndex++;
     }
 
     void PushPlayer()
@@ -125,12 +136,19 @@ public class Deck : MonoBehaviour
 
     public void Hit()
     {
-        /*TODO: 
-         * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-         */
+        
+        if(player.GetComponent<CardHand>().cards.Count == 2)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+        }
         
         //Repartimos carta al jugador
         PushPlayer();
+
+        if(player.GetComponent<CardHand>().points> 21)
+        {
+            Debug.Log("Player pierde");
+        }
 
         /*TODO:
          * Comprobamos si el jugador ya ha perdido y mostramos mensaje
@@ -142,8 +160,37 @@ public class Deck : MonoBehaviour
     {
         /*TODO: 
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-         */
+        */
+        if(player.GetComponent<CardHand>().cards.Count == 2)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+        }
 
+        if(dealer.GetComponent<CardHand>().points <= 16)
+        {
+            PushDealer();
+        }
+
+        if(dealer.GetComponent<CardHand>().points >= 17 && dealer.GetComponent<CardHand>().points <= 21)
+        {
+            dealerStand = true;
+        } 
+        if(dealerStand)
+        {
+            if(player.GetComponent<CardHand>().points == 21 && dealer.GetComponent<CardHand>().points == 21 ){
+            Debug.Log("Empate");
+            }else if(dealer.GetComponent<CardHand>().points > 21){
+                Debug.Log("Jugador gana");
+            }else if(player.GetComponent<CardHand>().points > 21){
+                Debug.Log("Dealer gana");
+            }else if(player.GetComponent<CardHand>().points == 21 &&  dealer.GetComponent<CardHand>().points < 21){
+                Debug.Log("Player gana");
+            }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
+                Debug.Log("dealer gana");
+            }
+        }
+       
+       
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más

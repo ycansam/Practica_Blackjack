@@ -80,7 +80,6 @@ public class Deck : MonoBehaviour
             valuesAux[k] = valuesAux[n];
             valuesAux[n] = value;
         }
-
         faces = facesAux;
         values = valuesAux;
     }
@@ -109,7 +108,6 @@ public class Deck : MonoBehaviour
             Apuesta.text = "Apuesta: " + apuesta.ToString();
         }else if(player.GetComponent<CardHand>().points > 21){
             finalMessage.text += "Dealer Gana";
-            banca -= apuesta;
             apuesta = 0;
             Banca.text = "Banca: " + banca.ToString();
             Apuesta.text = "Apuesta: " + apuesta.ToString();
@@ -123,7 +121,6 @@ public class Deck : MonoBehaviour
             Apuesta.text = "Apuesta: " + apuesta.ToString();
         }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
             finalMessage.text += "Dealer Gana";
-            banca -= apuesta;
             apuesta = 0;
             Banca.text = "Banca: " + banca.ToString();
             Apuesta.text = "Apuesta: " + apuesta.ToString();
@@ -174,8 +171,9 @@ public class Deck : MonoBehaviour
         float probabilidadDePasarse = (float)counter/(float)13;
         probMessage2.text += probabilidadDePasarse*100 +" % Pasarse";
 
+        Debug.Log(dealer.GetComponent<CardHand>().points);
 
-        if(cardIndex > 2){
+        if(cardIndex >=3){
             int dealerPoints = dealer.GetComponent<CardHand>().points;
             // Probabilidad de que el dealer tenga mas puntuacion que el jugador
             counter = 0;
@@ -200,6 +198,7 @@ public class Deck : MonoBehaviour
          */
         dealer.GetComponent<CardHand>().Push(faces[cardIndex],values[cardIndex]);
         cardIndex++;
+        CalculateProbabilities();
     }
 
     void PushPlayer()
@@ -217,21 +216,17 @@ public class Deck : MonoBehaviour
         if(!gameStop){
             partidaEmpezada = true; //para impedir apostar
             finalMessage.text = "";
-            if(player.GetComponent<CardHand>().cards.Count == 2)
-            {
-                dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
-            }
             //Repartimos carta al jugador
             PushPlayer();
 
             if(player.GetComponent<CardHand>().points > 21)
             {
                 finalMessage.text = "Player pierde";
-                banca += -apuesta;
                 apuesta = 0;
                 Banca.text = "Banca: " + banca.ToString();
                 Apuesta.text = "Apuesta: " + apuesta.ToString();
                 gameStop = true;
+                dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
             }
         }
         
@@ -247,6 +242,7 @@ public class Deck : MonoBehaviour
          * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
         */
         if(!gameStop){
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
             partidaEmpezada = true; // para impedir apostar
             if(player.GetComponent<CardHand>().cards.Count == 2)
             {
@@ -258,8 +254,8 @@ public class Deck : MonoBehaviour
             while(dealer.GetComponent<CardHand>().points <= 16)
             {
                 PushDealer();
-
-                if(dealer.GetComponent<CardHand>().points > 16)
+            }
+            if(dealer.GetComponent<CardHand>().points > 16)
                 {
                     dealerStand = true;
                     if(dealerStand)
@@ -279,7 +275,6 @@ public class Deck : MonoBehaviour
                             gameStop = true;
                         }else if(player.GetComponent<CardHand>().points > 21){
                             finalMessage.text = "Dealer Gana";
-                            banca -= apuesta;
                             apuesta = 0;
                             Banca.text = "Banca: " + banca.ToString();
                             Apuesta.text = "Apuesta: " + apuesta.ToString();
@@ -293,7 +288,6 @@ public class Deck : MonoBehaviour
                             gameStop = true;
                         }else if(dealer.GetComponent<CardHand>().points == 21 && player.GetComponent<CardHand>().points < 21){
                             finalMessage.text = "Dealer Gana";
-                            banca -= apuesta;
                             apuesta = 0;
                             Banca.text = "Banca: " + banca.ToString();
                             Apuesta.text = "Apuesta: " + apuesta.ToString();
@@ -307,7 +301,6 @@ public class Deck : MonoBehaviour
                             gameStop = true;
                         }else if(dealer.GetComponent<CardHand>().points > player.GetComponent<CardHand>().points){
                             finalMessage.text = "Dealer Gana";
-                            banca -= apuesta;
                             apuesta = 0;
                             Banca.text = "Banca: " + banca.ToString();
                             Apuesta.text = "Apuesta: " + apuesta.ToString();
@@ -315,31 +308,31 @@ public class Deck : MonoBehaviour
                         }
                     }
                 }
-            }
         }
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
          */                
-         
     }
 
     public void PlayAgain()
     {
-        gameStop = false;
-        partidaEmpezada = false;
-        apuesta = 0;
-        Banca.text = "Banca: " + banca.ToString();
-        Apuesta.text = "Apuesta: " + apuesta.ToString();
-        hitButton.interactable = true;
-        stickButton.interactable = true;
-        finalMessage.text = "";
-        player.GetComponent<CardHand>().Clear();
-        dealer.GetComponent<CardHand>().Clear();          
-        cardIndex = 0;
-        ShuffleCards();
-        StartGame();
+        if(banca >= 0){
+            gameStop = false;
+            partidaEmpezada = false;
+            apuesta = 0;
+            Banca.text = "Banca: " + banca.ToString();
+            Apuesta.text = "Apuesta: " + apuesta.ToString();
+            hitButton.interactable = true;
+            stickButton.interactable = true;
+            finalMessage.text = "";
+            player.GetComponent<CardHand>().Clear();
+            dealer.GetComponent<CardHand>().Clear();          
+            cardIndex = 0;
+            ShuffleCards();
+            StartGame();
+        }
     }
 
     public void SumarApuesta(){

@@ -133,7 +133,13 @@ public class Deck : MonoBehaviour
 
     private void CalculateProbabilities()
     {
-        
+        /*TODO:
+        * Calcular las probabilidades de:
+        * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
+        * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
+        * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
+        */
+
         int playerPoints = player.GetComponent<CardHand>().points;
         probMessage.text = "";
         probMessage1.text = "";
@@ -152,8 +158,8 @@ public class Deck : MonoBehaviour
             }
         }
         float probabilidadEntre21 = (float)counter/(float)13;
-
         probMessage1.text += probabilidadEntre21*100 +" % 17-21";
+
         // Probabilidad de pasarse
         counter = 0;
         for(int i = 0; i<13;i++){
@@ -168,12 +174,23 @@ public class Deck : MonoBehaviour
         float probabilidadDePasarse = (float)counter/(float)13;
         probMessage2.text += probabilidadDePasarse*100 +" % Pasarse";
 
-        /*TODO:
-        * Calcular las probabilidades de:
-        * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
-        * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
-        * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
-        */
+
+        if(cardIndex > 2){
+            int dealerPoints = dealer.GetComponent<CardHand>().points;
+            // Probabilidad de que el dealer tenga mas puntuacion que el jugador
+            counter = 0;
+            for(int i = 0; i<13;i++){
+                int value = i+1;
+                if(i > 10){
+                    value = 10;
+                }
+                if(dealerPoints+value-dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().value > playerPoints){
+                    counter++;
+                }
+            }
+            float probabilidadDealerJugador = (float)counter/(float)13;
+            probMessage.text += probabilidadDealerJugador*100 +" % dealer mas que jugador";   
+        }
     }
 
     void PushDealer()

@@ -318,7 +318,7 @@ public class Deck : MonoBehaviour
 
     public void PlayAgain()
     {
-        if(banca >= 0){
+        if(banca > 0){
             gameStop = false;
             partidaEmpezada = false;
             apuesta = 0;
